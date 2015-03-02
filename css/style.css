@@ -1,0 +1,106 @@
+body {
+	font:courier;
+	cursor:pointer !important;
+	user-select:none;
+	-moz-user-select:none;
+	padding:0;
+	margin:0;
+}
+
+/* title */
+
+header {
+	padding:9px;
+	background-color:black;
+	color:#ccc;
+	font:100 10pt courier;
+	position:relative;
+	z-index:10;
+}
+
+
+/* dragzone */
+
+#dragzone {
+	position:fixed;
+	left:0px;
+	top:30px;
+	height:100%;
+	border:solid 1px #ccc;
+	background-color:#f7f7f7;
+	z-index:5;
+}
+
+.dragitem {
+	padding:4px;
+	text-align:left;
+	font:100 10pt courier;
+	margin:3px;
+	background-color:#fff;
+	min-width:100px;
+	border:solid 1px #bbb;
+}
+
+/* dropzone */
+
+.dropzone {
+	width:400px;
+	display:block;
+	padding:20px;
+	background-color:#FFF !important;
+	float:left;
+	border-right:solid 1px #ccc;
+}
+
+#dropzone1 {
+	margin-left: 120px;
+}
+
+.emptyrack {
+	border:dashed 4px #ccc;
+	min-height:50px;
+	margin-top:10px;
+}
+
+
+/* hover */
+
+.rack-hover .emptyrack {
+	border-color:#000;
+}
+
+
+
+/* racks */
+
+.rackunit { 
+	border-bottom: solid 1px #ddd; 
+//	border-left: solid 1px #ddd; 
+	background-color:#fff; 
+	padding: 20px 5px 0px 5px; 
+	display: inline-block; 
+	position:relative;
+	margin-bottom:10px;
+}
+
+.rackcol { 
+	margin: 2px; 
+	padding: 2px; 
+	display: inline-block;
+ } 
+
+.racklabel { 
+	text-align: center; 
+	font: normal 12px courier; 
+	color:#888; padding: 4px 
+}
+
+.racktitle { 
+	font: normal 10px courier; 
+	color: #888; text-align:left; 
+	padding: 3px 6px; 
+	margin:2px; 
+	position:absolute; 
+	top:0px; left:0px; 
+}
+	
