@@ -57,7 +57,7 @@ header {
 }
 
 .emptyrack {
-	border:dashed 4px #ccc;
+	border:dashed 3px #ccc;
 	min-height:50px;
 	margin-top:10px;
 }

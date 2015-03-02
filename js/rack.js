@@ -136,8 +136,6 @@ var Parts = {
 			type: "keyboard",
 			action: function(data) {
 				if (data.on) {
-				//	console.log(data.note)
-				//	console.log(Math.pow(2,(data.note-60)/12))
 					this.unit.playbackRate = Math.pow(2,(data.note-60)/12);
 				}
 			},
@@ -166,13 +164,106 @@ var Parts = {
 			label: "pan",
 			type: "slider",
 			action: function(data) {
-			//	console.log(data.beat)
 				this.unit.pan.value = data.value*2-1;
-			//	console.log(this.unit.pan.value)
 			},
 			size: {
 				w: 150,
 				h: 25
+			}
+		}
+	],
+	"AMSynth": [
+		{
+			label: "volume",
+			type: "dial",
+			action: function(data) {
+				this.unit.volume.rampTo(nx.scale(data.value,0,1,-96,5),1);
+			},
+			initial: {
+				"value": 0.75
+			}
+		},{
+			label: "mod (!)",
+			type: "dial",
+			action: function(data) {
+				this.unit.harmonicity = data.value*100;
+			}
+		},{
+			label: "glide",
+			type: "dial",
+			action: function(data) {
+				this.unit.portamento = data.value;
+			}
+		},{
+			label: "pitch",
+			type: "keyboard",
+			action: function(data) {
+					if (data.on) {
+						this.unit.setNote(Math.pow(2,(data.note-60)/12)*440)
+						this.unit.triggerEnvelopeAttack(0, data.on)
+					} else {
+						this.unit.triggerEnvelopeRelease()
+					}
+				},
+			size: {
+				w: 400,
+				h: 70
+			}
+		}
+	],
+	"AutoPanner": [
+		{
+			label: "amount",
+			type: "dial",
+			action: function(data) {
+				this.unit.amount = data.value;
+			},
+			initial: {
+				value: 0.5
+			}
+		},
+		{
+			label: "freq",
+			type: "dial",
+			action: function(data) {
+				this.unit.frequency = data.value*20;
+			},
+			initial: {
+				value: 0
+			}
+		}
+	],
+	"BitCrusher": [
+		{
+			label: "bits",
+			type: "dial",
+			action: function(data) {
+				this.unit.bits = ~~(data.value*24);
+			},
+			initial: {
+				value: 1
+			}
+		},
+		{
+			label: "wet",
+			type: "dial",
+			action: function(data) {
+				this.unit.wet.value = data.value;
+			},
+			initial: {
+				value: 0
+			}
+		}
+	],
+	"Chebyshev": [
+		{
+			label: "order",
+			type: "dial",
+			action: function(data) {
+				this.unit.order = ~~(data.value*50);
+			},
+			initial: {
+				value: 1
 			}
 		}
 	]
