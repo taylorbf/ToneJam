@@ -29,6 +29,7 @@ header {
 	border:solid 1px #ccc;
 	background-color:#f7f7f7;
 	z-index:5;
+	max-width:120px;
 }
 
 .dragitem {
@@ -39,7 +40,17 @@ header {
 	background-color:#fff;
 	min-width:100px;
 	border:solid 1px #bbb;
+	overflow:hidden;
 }
+
+.ugen {
+	border-left:solid 3px #0c7;
+}
+
+.fx {
+	border-left:solid 3px #777;
+}
+
 
 /* dropzone */
 

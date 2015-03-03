@@ -145,33 +145,6 @@ var Parts = {
 			}
 		}
 	],
-	"PingPongDelay": [
-		{
-			label: "feedback / delay",
-			type: "position",
-			action: function(data) {
-				this.unit.delayTime.value = data.x*2,10
-				this.unit.feedback.value = data.y*0.99
-			},
-			size: {
-				w: 150,
-				h: 50
-			}
-		}
-	],
-	"Panner": [
-		{
-			label: "pan",
-			type: "slider",
-			action: function(data) {
-				this.unit.pan.value = data.value*2-1;
-			},
-			size: {
-				w: 150,
-				h: 25
-			}
-		}
-	],
 	"AMSynth": [
 		{
 			label: "volume",
@@ -210,6 +183,18 @@ var Parts = {
 				h: 70
 			}
 		}
+	],
+	"FMSynth": [
+	],
+	"Instrument": [
+	],
+	"Microphone": [
+	],
+	"Noise": [
+	],
+	"PluckSynth": [
+	],
+	"PolySynth": [
 	],
 	"AutoPanner": [
 		{
@@ -266,5 +251,92 @@ var Parts = {
 				value: 1
 			}
 		}
+	],
+	"EQ": [
+		{
+			label: "low",
+			type: "position",
+			action: function(data) {
+				this.unit.low.value = nx.invert(data.y)*-50+5
+				this.unit.lowFrequency.value = data.x*1000
+			},
+			initial: {
+				value: 1
+			},
+			size: {
+				w: 100,
+				h: 60
+			}
+		},
+		{
+			label: "m",
+			type: "position",
+			action: function(data) {
+				this.unit.mid.value = nx.invert(data.y)*-50+5
+			},
+			initial: {
+				value: 1
+			},
+			size: {
+				w: 20,
+				h: 60
+			}
+		},
+		{
+			label: "high",
+			type: "position",
+			action: function(data) {
+				this.unit.high.value = nx.invert(data.y)*-50+5
+				this.unit.highFrequency.value = data.x*2000+800
+			},
+			initial: {
+				value: 1
+			},
+			size: {
+				w: 100,
+				h: 60
+			}
+		}
+	],
+	"Freeverb": [
+	],
+	"Gate": [
+	],
+	"FeedbackCombFilter": [
+	],
+	"Panner": [
+		{
+			label: "pan",
+			type: "slider",
+			action: function(data) {
+				this.unit.pan.value = data.value*2-1;
+			},
+			size: {
+				w: 150,
+				h: 25
+			}
+		}
+	],
+	"PingPongDelay": [
+		{
+			label: "feedback / delay",
+			type: "position",
+			action: function(data) {
+				this.unit.delayTime.value = data.x*2,10
+				this.unit.feedback.value = data.y*0.99
+			},
+			size: {
+				w: 150,
+				h: 50
+			}
+		}
+	],
+	"Phaser": [
+	],
+	"Recorder": [
 	]
+//	"Sampler": [
+//	],
+//	"WaveShaper": [
+//	]
 }

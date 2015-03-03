@@ -39,7 +39,7 @@
 			$.ajax({
 			    url: dir,
 			    success: function (data) {
-			        $(data).find("a:contains(" + fileextension + ")").each(function () {
+			        $(data).find("a:contains('" + fileextension + "')").each(function () {
 			        		var file = this.href
 			        		file = file.split("/")
 			        		media.push(file[file.length-1])
@@ -58,8 +58,12 @@
 
 			<script>
 
+				var pcount = 0;
+
 				for (var key in Parts) {
-					document.write('<div class="dragitem">'+key+'</div>')
+					var cl = (pcount<8) ? "dragitem ugen" : "dragitem fx";
+					document.write('<div class="'+cl+'">'+key+'</div>')
+					pcount++
 				}
 
 			</script>
@@ -72,7 +76,12 @@
 
 			<div id="racks"></div>
 
-			<div class="emptyrack">
+			<div class="emptyrack emptyugen">
+				Signal Gen
+			</div>
+
+			<div class="emptyrack emptyfx">
+				FX
 			</div>
 
 		</div>
