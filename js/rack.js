@@ -299,8 +299,43 @@ var Parts = {
 		}
 	],
 	"Freeverb": [
+		{
+			label: "damping / room size",
+			type: "position",
+			action: function(data) {
+				this.unit.dampening.value = data.x;
+				this.unit.roomSize.value = data.y;
+			},
+			size: {
+				w: 100,
+				h: 60
+			}
+		}
 	],
 	"Gate": [
+		{
+			label: "attack / release",
+			type: "position",
+			action: function(data) {
+				this.unit.attack.value = data.x;
+				this.unit.release.value = data.y;
+			},
+			size: {
+				w: 100,
+				h: 60
+			}
+		},
+		{
+			label: "threshold",
+			type: "slider",
+			action: function(data) {
+				this.unit.threshold.value = nx.toDB(data.value) + 10;
+			},
+			size: {
+				w: 20,
+				h: 60
+			}
+		}
 	],
 	"FeedbackCombFilter": [
 	],

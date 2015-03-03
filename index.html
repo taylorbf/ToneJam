@@ -16,6 +16,11 @@
 			nx.onload = function() {
 				nx.colorize("#416");
 			//	ghost1.watch();
+				nx.toDB = function(signal) {
+					var DB = nx.scale(signal,0,1,-96,5)
+					console.log(DB)
+					return DB;
+				}
 			}
 
 			$(function() {
@@ -27,8 +32,7 @@
 					hoverClass: "rack-hover",
 					drop: function( event, ui ) {
 						addRack(ui.draggable[0].innerHTML,$(this).find("#racks")[0])
-			       	//	$( this )
-			        //	.find("#racks").append(ui.draggable[0].innerHTML)
+			       	//$(this).find("#racks").append(ui.draggable[0].innerHTML)
 			        }
 				})
 			})
