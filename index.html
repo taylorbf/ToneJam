@@ -14,7 +14,7 @@
 		<script>
 
 			nx.onload = function() {
-				nx.colorize("#416");
+				nx.colorize("#0c7");
 			//	ghost1.watch();
 				nx.toDB = function(signal) {
 					var DB = nx.scale(signal,0,1,-96,5)
@@ -29,10 +29,24 @@
 					//drag: function() {}
 				})
 				$(".dropzone").droppable({
-					hoverClass: "rack-hover",
+				//	hoverClass: "rack-hover",
+					over: function(event,ui) {
+						if (ui.draggable[0].className.indexOf("ugen")>=0) {
+							$(this).find(".emptyugen").css("border-style", "solid")
+						} else {
+							$(this).find(".emptyfx").css("border-style", "solid")
+						}
+					},
+					out: function(event,ui) {
+						$(this).find(".emptyrack").css("border-style", "dashed")
+					},
 					drop: function( event, ui ) {
 						addRack(ui.draggable[0].innerHTML,$(this).find("#racks")[0])
-			       	//$(this).find("#racks").append(ui.draggable[0].innerHTML)
+						if (ui.draggable[0].className.indexOf("ugen")>=0) {
+			       			$(this).find(".emptyugen").hide()
+			       		} else {
+			       			$(this).find(".emptyugen").hide()
+			       		}
 			        }
 				})
 			})
@@ -74,14 +88,14 @@
 
 		</div>
 
-		<header>ToneJam : an improvisational controller for tone.js</header>
+		<header>ToneJam : An improvisational controller for Tone.js + NexusUI</header>
 
 		<div class="dropzone" id="dropzone1">
 
 			<div id="racks"></div>
 
 			<div class="emptyrack emptyugen">
-				Signal Gen
+				Signals
 			</div>
 
 			<div class="emptyrack emptyfx">

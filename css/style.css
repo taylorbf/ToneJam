@@ -61,6 +61,7 @@ header {
 	background-color:#FFF !important;
 	float:left;
 	border-right:solid 1px #ccc;
+
 }
 
 #dropzone1 {
@@ -69,8 +70,17 @@ header {
 
 .emptyrack {
 	border:dashed 3px #ccc;
-	min-height:50px;
 	margin-top:10px;
+	font:100 20px courier;
+	color:#ccc;
+	text-align:center;
+	padding:20px;
+}
+
+.emptyugen {
+	color:#0c7;
+//	opacity:0.6;
+	border-color:#0c7;
 }
 
 
