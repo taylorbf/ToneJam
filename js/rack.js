@@ -11,7 +11,7 @@ var shelf = function() {
 	this.make = function() {
 		var htmlstr = '<div class="dropzone" id="dropzone'+this.index+'">'
 					+ '<div class="emptyrack emptyugen">Signals</div>'
-					+ '<div id="racks"></div>'
+					+ '<div class="racks"></div>'
 					+ '<div class="emptyrack emptyfx">FX</div>'
 					+ '</div>';
 		$("#shelves").append(htmlstr)
@@ -35,7 +35,7 @@ var shelf = function() {
 				if (ugen && self.hasUGen) {
 					return;
 				}
-				addRack(ui.draggable[0].innerHTML,$(this).find("#racks")[0],$(this).attr("id"),ugen)
+				addRack(ui.draggable[0].innerHTML,$(this).find(".racks")[0],$(this).attr("id"),ugen)
 				if (ugen) {
 	       			$(this).find(".emptyugen").hide()
 	       			self.hasUGen = true;
@@ -99,6 +99,11 @@ var rack = function (unit,unittype,unittitle,parent,shelfNum,ugen) {
 			h: parts[i].size ? parts[i].size.h : false
 		});
 		widget.unit = unit
+
+	/*	if (!ugen) {
+			widget.colors.accent = "#333"
+			widget.init();
+		} */
 
 		if (parts[i].type=="select") {
 			widget.choices = media
@@ -377,7 +382,7 @@ var Parts = {
 				}
 			},
 			size: {
-				w: 240,
+				w: 230,
 				h: 50
 			}
 		}
@@ -514,7 +519,7 @@ var Parts = {
 			}
 		},
 		{
-			label: "threshold",
+			label: "cut",
 			type: "slider",
 			action: function(data) {
 				this.unit.threshold.value = nx.toDB(data.value) + 10;

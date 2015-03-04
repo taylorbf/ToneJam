@@ -1,24 +1,10 @@
 body {
+	font:'courier';
 	cursor:pointer !important;
 	user-select:none;
 	-moz-user-select:none;
 	padding:0;
 	margin:0;
-}
-
-body, header, div, span {
-	font-family:'Lato' !important;
-	letter-spacing:0.1em;
-} 
-
-a {
-	color:#fff;
-	text-decoration:none;
-}
-
-a:hover {
-	color:#ccc;
-/*	border-bottom:dotted 1px white; */
 }
 
 /* title */
@@ -27,7 +13,7 @@ header {
 	padding:9px;
 	background-color:black;
 	color:#ccc;
-	font:300 10pt courier;
+	font:100 10pt courier;
 	position:fixed;
 	z-index:10;
 	top:0px;
@@ -41,7 +27,8 @@ header {
 #dragzone {
 	position:fixed;
 	left:0px;
-	top:33px;
+	top:30px;
+	height:100%;
 	border:solid 1px #ccc;
 	background-color:#f7f7f7;
 	z-index:5;
@@ -51,7 +38,7 @@ header {
 .dragitem {
 	padding:4px;
 	text-align:left;
-	font:300 10pt courier;
+	font:100 10pt courier;
 	margin:3px;
 	background-color:#fff;
 	min-width:100px;
@@ -71,13 +58,14 @@ header {
 /* dropzone */
 
 .dropzone {
-	width:430px;
+	width:400px;
 	display:block;
 	padding:20px;
 	background-color:#FFF !important;
 	float:left;
 	border-right:solid 1px #ccc;
 	margin-top:20px;
+
 }
 
 #dropzone0 {
@@ -85,9 +73,9 @@ header {
 }
 
 .emptyrack {
-	border:dashed 2px #ccc;
+	border:dashed 3px #ccc;
 	margin-top:10px;
-	font:300 20px courier;
+	font:100 20px courier;
 	color:#ccc;
 	text-align:center;
 	padding:20px;
@@ -110,32 +98,14 @@ header {
 
 /* racks */
 
-.racks {
-	margin-top:20px;
-	position:relative;
-	overflow:auto;
-	padding:1px;
-}
-.ugenrack {
-	border:solid 1px #0c7 !important;
-	margin-bottom:5px;
-}
-.ugenrack .racktitle {
-	background-color:#0c7 !important;
-	color:white !important;
-}
-
 .rackunit { 
-	border-bottom: solid 1px #ddd;  
+	border-bottom: solid 1px #ddd; 
+//	border-left: solid 1px #ddd; 
 	background-color:#fff; 
 	padding: 20px 5px 0px 5px; 
+	display: inline-block; 
 	position:relative;
-	border:solid 1px #ccc;
-	margin-right:-1px;
-	margin-top:-1px;
-	float:left;
-	min-height:94px;
-	box-radius:border-box;
+	margin-bottom:10px;
 }
 
 .rackcol { 
@@ -153,24 +123,20 @@ header {
 .racktitle { 
 	font: normal 10px courier; 
 	color: #888; text-align:left; 
-	padding: 2px 6px; 
+	padding: 3px 6px; 
 	margin:2px; 
 	position:absolute; 
-	top:0px; 
-	left:0px; 
-	background-color:#eee;
+	top:0px; left:0px; 
 }
 
 .closer {
 	position:absolute;
 	top:5px;
 	right:5px;
-	color:#555;
+	color:#777;
 	font-family:courier;
 	font-size:8pt;
 	background-color:#eee;
-	padding:1px 4px 4px;
-	line-height:8px;
-	letter-spacing:0;
+	padding:1px 4px;
 }
 	
