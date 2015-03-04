@@ -95,8 +95,8 @@ header {
 
 .emptyugen {
 	color:#0c7;
-//	opacity:0.6;
 	border-color:#0c7;
+	margin:10px 0px;
 }
 
 
@@ -111,7 +111,6 @@ header {
 /* racks */
 
 .racks {
-	margin-top:20px;
 	position:relative;
 	overflow:auto;
 	padding:1px;

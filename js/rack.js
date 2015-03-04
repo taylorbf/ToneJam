@@ -10,7 +10,7 @@ var shelf = function() {
 	this.hasUGen = false;
 	this.make = function() {
 		var htmlstr = '<div class="dropzone" id="dropzone'+this.index+'">'
-					+ '<div class="emptyrack emptyugen">Signals</div>'
+					+ '<div class="emptyrack emptyugen">UGen</div>'
 					+ '<div class="racks"></div>'
 					+ '<div class="emptyrack emptyfx">FX</div>'
 					+ '</div>';
