@@ -68,7 +68,7 @@
 					var pcount = 0;
 
 					for (var key in Parts) {
-						var cl = (pcount<6) ? "dragitem ugen" : "dragitem fx";
+						var cl = (Parts[key].ugen) ? "dragitem ugen" : "dragitem fx";
 						document.write('<div class="'+cl+'">'+key+'</div>')
 						pcount++
 					}
@@ -76,20 +76,6 @@
 				</script>
 
 			</div>
-<!--
-			<div class="dropzone" id="dropzone1">
-
-				<div id="racks"></div>
-
-				<div class="emptyrack emptyugen">
-					Signals
-				</div>
-
-				<div class="emptyrack emptyfx">
-					FX
-				</div>
-
-			</div> -->
 
 
 		</div>

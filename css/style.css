@@ -73,11 +73,11 @@ header {
 .dropzone {
 	width:430px;
 	display:block;
-	padding:20px;
+	padding:20px 20px 20px;
 	background-color:#FFF !important;
 	float:left;
 	border-right:solid 1px #ccc;
-	margin-top:20px;
+	margin-top:40px;
 }
 
 #dropzone0 {
@@ -87,7 +87,7 @@ header {
 .emptyrack {
 	border:dashed 2px #ccc;
 	margin-top:10px;
-	font:300 20px courier;
+	font:300 17px courier;
 	color:#ccc;
 	text-align:center;
 	padding:20px;
@@ -114,6 +114,7 @@ header {
 	position:relative;
 	overflow:auto;
 	padding:1px;
+	margin:10px 0px;
 }
 .ugenrack {
 	border:solid 1px #0c7 !important;

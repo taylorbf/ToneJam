@@ -10,7 +10,7 @@ var shelf = function() {
 	this.hasUGen = false;
 	this.make = function() {
 		var htmlstr = '<div class="dropzone" id="dropzone'+this.index+'">'
-					+ '<div class="emptyrack emptyugen">UGen</div>'
+					+ '<div class="emptyrack emptyugen">UGEN</div>'
 					+ '<div class="racks"></div>'
 					+ '<div class="emptyrack emptyfx">FX</div>'
 					+ '</div>';
@@ -56,16 +56,17 @@ function addShelf() {
 
 function addRack(type,parent,shelfNum,ugen) {
 	shelfNum = shelfNum.replace("dropzone","")
-	var unit = new Tone[type]()
+	var unit = new Tone[Parts[type].type]()
 	rack(unit,type,type,parent,shelfNum,ugen)
 	unit.toMaster();
 }
 
-var rack = function (unit,unittype,unittitle,parent,shelfNum,ugen) {
+var rack = function (unit,unitname,unittitle,parent,shelfNum,ugen) {
 
 	var rackid = "rack"+rackindex
 	rackindex++
-	var parts = Parts[unittype]
+	var rackinfo = Parts[unitname]
+	var parts = rackinfo.widgets;
 
 	var container = document.createElement("div")
 	container.setAttribute("class", "rackunit")
@@ -81,7 +82,7 @@ var rack = function (unit,unittype,unittitle,parent,shelfNum,ugen) {
 
 	var title = document.createElement("div")
 	title.setAttribute("class", "racktitle")
-	title.innerHTML = unittitle ? unittitle : unittype
+	title.innerHTML = rackinfo.type
 	container.appendChild(title)
 
 
@@ -99,6 +100,9 @@ var rack = function (unit,unittype,unittitle,parent,shelfNum,ugen) {
 			h: parts[i].size ? parts[i].size.h : false
 		});
 		widget.unit = unit
+		if (parts[i].init) {
+			parts[i].init.bind(widget)();
+		}
 
 	/*	if (!ugen) {
 			widget.colors.accent = "#333"
@@ -134,9 +138,19 @@ var rack = function (unit,unittype,unittitle,parent,shelfNum,ugen) {
 		if (container.className.indexOf("ugen")>=0) {
 			shelves[shelfNum].hasUGen = false;
 			$("#dropzone"+shelfNum).find(".emptyugen").show(0)
+			console.log(widget.unit)
+			widget.unit.dispose();
 		}
 		chain.splice(chain.indexOf(widget.unit),1);
 		parent.removeChild(container)
+		for (var i=0;i<chain.length;i++) {
+			chain[i].disconnect()
+			if (i<chain.length-1) {
+				chain[i].connect(chain[i+1])
+			} else {
+				chain[i].toMaster()
+			}
+		}
 	}
 
 
@@ -156,7 +170,7 @@ var rack = function (unit,unittype,unittitle,parent,shelfNum,ugen) {
 		}
 	}
 
-	if (unittype=="Player") {
+	if (parts.type=="Player") {
 		unit.load("audio/"+media[0], function() { })
 	}
 
@@ -165,65 +179,145 @@ var rack = function (unit,unittype,unittitle,parent,shelfNum,ugen) {
 
 
 var Parts = {
-	"Player": [
-		{
-			label: "on/off",
-			type: "toggle",
-			action: function(data) {
-				if (data.value) {
-					this.unit.start();
-				} else {
-					console.log(this.unit)
-					this.unit.stop();
+	"Player.Keys": {
+		type: "Player",
+		ugen: true,
+		widgets:[
+			{
+				label: "on/off",
+				type: "toggle",
+				action: function(data) {
+					if (data.value) {
+						this.unit.start();
+					} else {
+						console.log(this.unit)
+						this.unit.stop();
+					}
+				}
+			},{
+				label: "vol",
+				type: "dial",
+				action: function(data) {
+					this.unit.volume.value = nx.scale(data.value,0,1,-96,5)
+				},
+				initial: {
+					"value": 0.95
+				}
+			},{
+				label: "loop",
+				type: "toggle",
+				action: function(data) {
+					this.unit.loop = data.value ? true : false;
+				}
+			},{
+				label: "loop points",
+				type: "range",
+				action: function(data) {
+					this.unit.setLoopPoints(data.start*this.unit.buffer.duration,data.stop*this.unit.buffer.duration)
+				}
+			},{
+				label: "sound",
+				type: "select",
+				action: function(data) {
+					this.unit.load("audio/"+data.text, function() { })
+				},
+				size: {
+					w: 90,
+					h: 30
+				}
+			},{
+				label: "pitch",
+				type: "keyboard",
+				action: function(data) {
+					if (data.on) {
+						this.unit.playbackRate = Math.pow(2,(data.note-60)/12);
+					}
+				},
+				size: {
+					w: 400,
+					h: 70
 				}
 			}
-		},{
-			label: "vol",
-			type: "dial",
-			action: function(data) {
-				this.unit.volume.value = nx.scale(data.value,0,1,-96,5)
-			},
-			initial: {
-				"value": 0.95
-			}
-		},{
-			label: "loop",
-			type: "toggle",
-			action: function(data) {
-				this.unit.loop = data.value ? true : false;
-			}
-		},{
-			label: "loop points",
-			type: "range",
-			action: function(data) {
-				this.unit.setLoopPoints(data.start*this.unit.buffer.duration,data.stop*this.unit.buffer.duration)
-			}
-		},{
-			label: "sound",
-			type: "select",
-			action: function(data) {
-			//	console.log(data)
-				this.unit.load("audio/"+data.text, function() { })
-			},
-			size: {
-				w: 90,
-				h: 30
-			}
-		},{
-			label: "pitch",
-			type: "keyboard",
-			action: function(data) {
-				if (data.on) {
-					this.unit.playbackRate = Math.pow(2,(data.note-60)/12);
+		],
+	},
+	"Player.Seq": {
+		type: "Player",
+		ugen: true,
+		widgets:[
+			{
+				label: "on/off",
+				type: "toggle",
+				action: function(data) {
+					if (data.value) {
+						this.unit.start();
+					} else {
+						this.unit.stop();
+					}
 				}
-			},
-			size: {
-				w: 400,
-				h: 70
+			},{
+				label: "vol",
+				type: "dial",
+				action: function(data) {
+					this.unit.volume.value = nx.scale(data.value,0,1,-96,5)
+				},
+				initial: {
+					"value": 0.95
+				}
+			},{
+				label: "loop",
+				type: "toggle",
+				action: function(data) {
+					this.unit.loop = data.value ? true : false;
+				}
+			},{
+				label: "loop points",
+				type: "range",
+				action: function(data) {
+					this.unit.setLoopPoints(data.start*this.unit.buffer.duration,data.stop*this.unit.buffer.duration)
+				}
+			},{
+				label: "sound",
+				type: "select",
+				action: function(data) {
+					this.unit.load("audio/"+data.text, function() { 
+						this.unit.hasBuffer = true;
+						this.unit.retrigger = true;
+					}.bind(this))
+				},
+				size: {
+					w: 90,
+					h: 30
+				}
+			},{
+				label: "pitch",
+				type: "matrix",
+				action: function(data) {
+					if (this.unit.hasBuffer && data.list) {
+						for (var i=0;i<data.list.length;i++) {
+							if (data.list[i]) {
+								this.unit.start();
+								this.unit.playbackRate = Math.pow(2,(i*7-24)/12);
+							}
+						}
+					}
+				},
+				size: {
+					w: 400,
+					h: 200
+				},
+				init: function(widget) {
+					this.col = 16;
+					this.row = 8;
+					this.init();
+					this.sequence(240)
+				} 
 			}
-		}
-	],
-	"AMSynth": [
+		],
+	},
+	"AMSynth": {
+		type: "AMSynth",
+		ugen: true,
+		widgets: [
 		{
 			label: "volume",
 			type: "dial",
@@ -261,8 +355,11 @@ var Parts = {
 				h: 70
 			}
 		}
-	],
-	"FMSynth": [
+	]},
+	"FMSynth": {
+		type: "FMSynth",
+		ugen: true,
+		widgets: [
 		{
 			label: "volume",
 			type: "dial",
@@ -306,8 +403,11 @@ var Parts = {
 				h: 70
 			}
 		}
-	],
-	"Microphone": [
+	]},
+	"Microphone": {
+		type: "Microphone",
+		ugen: true,
+		widgets: [
 		{
 			label: "volume",
 			type: "dial",
@@ -329,8 +429,11 @@ var Parts = {
 				}
 			}
 		}
-	],
-	"Noise": [
+	]},
+	"Noise": {
+		type: "Noise",
+		ugen: true,
+		widgets: [
 		{
 			label: "on/off",
 			type: "toggle",
@@ -356,8 +459,11 @@ var Parts = {
 				this.unit.type = data.text;
 			}
 		}
-	],
-	"PluckSynth": [
+	]},
+	"PluckSynth": {
+		type: "PluckSynth",
+		ugen: true,
+		widgets: [
 		{
 			label: "volume",
 			type: "dial",
@@ -386,10 +492,13 @@ var Parts = {
 				h: 50
 			}
 		}
-	],
+	]},
 //	"PolySynth": [
 //	],
-	"AutoPanner": [
+	"AutoPanner": {
+		type: "AutoPanner",
+		ugen: false,
+		widgets: [
 		{
 			label: "amount",
 			type: "dial",
@@ -410,8 +519,11 @@ var Parts = {
 				value: 0
 			}
 		}
-	],
-	"BitCrusher": [
+	]},
+	"BitCrusher": {
+		type: "BitCrusher",
+		ugen: false,
+		widgets: [
 		{
 			label: "bits",
 			type: "dial",
@@ -432,8 +544,11 @@ var Parts = {
 				value: 0
 			}
 		}
-	],
-	"Chebyshev": [
+	]},
+	"Chebyshev": {
+		type: "Chebyshev",
+		ugen: false,
+		widgets: [
 		{
 			label: "order",
 			type: "dial",
@@ -444,8 +559,11 @@ var Parts = {
 				value: 1
 			}
 		}
-	],
-	"EQ": [
+	]},
+	"EQ": {
+		type: "EQ",
+		ugen: false,
+		widgets: [
 		{
 			label: "low",
 			type: "position",
@@ -490,8 +608,11 @@ var Parts = {
 				h: 60
 			}
 		}
-	],
-	"Freeverb": [
+	]},
+	"Freeverb": {
+		type: "Freeverb",
+		ugen: false,
+		widgets: [
 		{
 			label: "damping / size",
 			type: "position",
@@ -504,8 +625,11 @@ var Parts = {
 				h: 60
 			}
 		}
-	],
-	"Gate": [
+	]},
+	"Gate": {
+		type: "Gate",
+		ugen: false,
+		widgets: [
 		{
 			label: "attack / release",
 			type: "position",
@@ -529,7 +653,8 @@ var Parts = {
 				h: 60
 			}
 		}
-	],
+	]}
+	/*,
 	"FeedbackCombFilter": [
 		{
 			label: "threshold",
@@ -614,5 +739,5 @@ var Parts = {
 //	"Sampler": [
 //	],
 //	"WaveShaper": [
-//	]
+//	] */
 }
