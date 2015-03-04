@@ -4,13 +4,18 @@ var items = new Array();
 var media = new Array();
 var units = new Array();
 
-function addRack(type,parent) {
+for (var i=0;i<6;i++) {
+	units[i] = new Array();
+}
+
+function addRack(type,parent,rackNum) {
+	rackNum = rackNum.replace("dropzone","")
 	var unit = new Tone[type]()
-	rack(unit,type,type,parent)
+	rack(unit,type,type,parent,rackNum)
 	unit.toMaster();
 }
 
-var rack = function (unit,unittype,unittitle,parent) {
+var rack = function (unit,unittype,unittitle,parent,rackNum) {
 
 	var rackid = "rack"+rackindex
 	rackindex++
@@ -64,17 +69,17 @@ var rack = function (unit,unittype,unittitle,parent) {
 	}
 
 	items.push(widget);
+	console.log(rackNum)
+	var chain = units[rackNum]
 
-	units.push(widget.unit);
+	chain.push(widget.unit);
 
-	for (var i=0;i<units.length;i++) {
-		units[i].disconnect()
-		if (i<units.length-1) {
-			console.log(i)
-			units[i].connect(units[i+1])
+	for (var i=0;i<chain.length;i++) {
+		chain[i].disconnect()
+		if (i<chain.length-1) {
+			chain[i].connect(chain[i+1])
 		} else {
-			console.log(i + " master")
-			units[i].toMaster()
+			chain[i].toMaster()
 		}
 	}
 
@@ -185,17 +190,132 @@ var Parts = {
 		}
 	],
 	"FMSynth": [
-	],
-	"Instrument": [
+		{
+			label: "volume",
+			type: "dial",
+			action: function(data) {
+				this.unit.volume.rampTo(nx.toDB(data.value),1);
+			},
+			initial: {
+				"value": 0.75
+			}
+		},{
+			label: "harm",
+			type: "dial",
+			action: function(data) {
+				this.unit.harmonicity = data.value*100;
+			}
+		},{
+			label: "mod index",
+			type: "dial",
+			action: function(data) {
+				this.unit.modulationIndex = data.value*100;
+			}
+		},{
+			label: "glide",
+			type: "dial",
+			action: function(data) {
+				this.unit.portamento = data.value;
+			}
+		},{
+			label: "pitch",
+			type: "keyboard",
+			action: function(data) {
+					if (data.on) {
+						this.unit.setNote(Math.pow(2,(data.note-60)/12)*440)
+						this.unit.triggerEnvelopeAttack(0, data.on)
+					} else {
+						this.unit.triggerEnvelopeRelease()
+					}
+				},
+			size: {
+				w: 400,
+				h: 70
+			}
+		}
 	],
 	"Microphone": [
+		{
+			label: "volume",
+			type: "dial",
+			action: function(data) {
+				this.unit.volume.value = nx.toDB(data.value);
+			},
+			initial: {
+				value: 0.5
+			}
+		},
+		{
+			label: "record (<span style='color:red'>WARNING: FEEDBACK</span>)",
+			type: "toggle",
+			action: function(data) {
+				if (data.value) {
+					this.unit.start();
+				} else {
+					this.unit.stop();
+				}
+			}
+		}
 	],
 	"Noise": [
+		{
+			label: "on/off",
+			type: "toggle",
+			action: function(data) {
+				if (data.value) {
+					this.unit.start();
+				} else {
+					this.unit.stop();
+				}
+			}
+		},
+		{
+			label: "volume",
+			type: "dial",
+			action: function(data) {
+				this.unit.volume.value = nx.toDB(data.value);
+			}
+		},
+		{
+			label: "type",
+			type: "tabs",
+			action: function(data) {
+				this.unit.type = data.text;
+			}
+		}
 	],
 	"PluckSynth": [
+		{
+			label: "volume",
+			type: "dial",
+			action: function(data) {
+				this.unit.volume.value = nx.toDB(data.value)+5;
+			}
+		},
+		{
+			label: "resonance",
+			type: "dial",
+			action: function(data) {
+				this.unit.resonance.value = data.value;
+			}
+		},{
+			label: "pitch",
+			type: "keyboard",
+			action: function(data) {
+				if (data.on) {
+					this.unit.triggerAttack(Math.pow(2,(data.note-60)/12)*220)
+				} else {
+				//	this.unit.triggerRelease()
+				}
+			},
+			size: {
+				w: 240,
+				h: 50
+			}
+		}
 	],
-	"PolySynth": [
-	],
+//	"PolySynth": [
+//	],
 	"AutoPanner": [
 		{
 			label: "amount",
@@ -338,7 +458,26 @@ var Parts = {
 		}
 	],
 	"FeedbackCombFilter": [
-	
+		{
+			label: "threshold",
+			type: "dial",
+			action: function(data) {
+				this.unit.resonance.value = data.value
+			}
+		},
+		{
+			label: "threshold",
+			type: "keyboard",
+			action: function(data) {
+				if (data.on) {
+					this.unit.delayTime = 1/nx.mtof(data.note)
+				}
+			},
+			size: {
+				w: 250,
+				h: 50
+			}
+		}
 	],
 	"Panner": [
 		{
@@ -358,7 +497,7 @@ var Parts = {
 			label: "feedback / delay",
 			type: "position",
 			action: function(data) {
-				this.unit.delayTime.value = data.x*2,10
+				this.unit.delayTime.value = data.x*2
 				this.unit.feedback.value = data.y*0.99
 			},
 			size: {
@@ -368,9 +507,37 @@ var Parts = {
 		}
 	],
 	"Phaser": [
-	],
-	"Recorder": [
+		{
+			label: "base",
+			type: "dial",
+			action: function(data) {
+				this.unit.baseFrequency = data.value
+			}
+		},
+		{
+			label: "depth",
+			type: "dial",
+			action: function(data) {
+				this.unit.depth = data.value
+			}
+		},
+		{
+			label: "freq",
+			type: "dial",
+			action: function(data) {
+				this.unit.frequency.value = data.value
+			}
+		},
+		{
+			label: "wet",
+			type: "dial",
+			action: function(data) {
+				this.unit.wet.value = data.value
+			}
+		}
 	]
+//	"Recorder": [
+//	]
 //	"Sampler": [
 //	],
 //	"WaveShaper": [

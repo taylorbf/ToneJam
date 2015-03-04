@@ -14,8 +14,11 @@ header {
 	background-color:black;
 	color:#ccc;
 	font:100 10pt courier;
-	position:relative;
+	position:fixed;
 	z-index:10;
+	top:0px;
+	left:0px;
+	width:100%;
 }
 
 
@@ -61,6 +64,7 @@ header {
 	background-color:#FFF !important;
 	float:left;
 	border-right:solid 1px #ccc;
+	margin-top:20px;
 
 }
 
