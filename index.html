@@ -7,6 +7,7 @@
 		<script src="js/nexusUI.js"></script>
 		<script src="js/Tone4.js"></script>
 		<script src="js/rack.js"></script>
+		<meta charset="utf-8"></meta>
 		<link href="css/style.css" rel="stylesheet" type="text/css"></link>
 	</head>
 	<body>
@@ -24,31 +25,11 @@
 			}
 
 			$(function() {
+
+				addShelf()
+
 				$(".dragitem").draggable({
 					helper: "clone"
-					//drag: function() {}
-				})
-				$(".dropzone").droppable({
-				//	hoverClass: "rack-hover",
-					over: function(event,ui) {
-						if (ui.draggable[0].className.indexOf("ugen")>=0) {
-							$(this).find(".emptyugen").css("border-style", "solid")
-						} else {
-							$(this).find(".emptyfx").css("border-style", "solid")
-						}
-					},
-					out: function(event,ui) {
-						$(this).find(".emptyrack").css("border-style", "dashed")
-					},
-					drop: function( event, ui ) {
-						addRack(ui.draggable[0].innerHTML,$(this).find("#racks")[0],$(this).attr("id"))
-						if (ui.draggable[0].className.indexOf("ugen")>=0) {
-			       			$(this).find(".emptyugen").hide()
-			       		} else {
-			       			$(this).find(".emptyugen").hide()
-			       		}
-			       		$(this).find(".emptyrack").css("border-style", "dashed")
-			        }
 				})
 			})
 
@@ -75,7 +56,7 @@
 
 		<header>ToneJam : An improvisational controller for Tone.js + NexusUI</header>
 
-		<div style="width:2400px;overflow:auto">
+		<div id="shelves" style="width:2400px;overflow:auto">
 
 			<div id="dragzone">
 
@@ -92,7 +73,7 @@
 				</script>
 
 			</div>
-
+<!--
 			<div class="dropzone" id="dropzone1">
 
 				<div id="racks"></div>
@@ -105,63 +86,9 @@
 					FX
 				</div>
 
-			</div>
+			</div> -->
 
-			<div class="dropzone" id="dropzone2">
 
-				<div id="racks"></div>
-
-				<div class="emptyrack emptyugen">
-					Signals
-				</div>
-
-				<div class="emptyrack emptyfx">
-					FX
-				</div>
-
-			</div>
-
-			<div class="dropzone" id="dropzone3">
-
-				<div id="racks"></div>
-
-				<div class="emptyrack emptyugen">
-					Signals
-				</div>
-
-				<div class="emptyrack emptyfx">
-					FX
-				</div>
-
-			</div>
-
-			<div class="dropzone" id="dropzone4">
-
-				<div id="racks"></div>
-
-				<div class="emptyrack emptyugen">
-					Signals
-				</div>
-
-				<div class="emptyrack emptyfx">
-					FX
-				</div>
-
-			</div>
-
-			<div class="dropzone" id="dropzone5">
-
-				<div id="racks"></div>
-
-				<div class="emptyrack emptyugen">
-					Signals
-				</div>
-
-				<div class="emptyrack emptyfx">
-					FX
-				</div>
-
-			</div>
 		</div>
 <!--
 		<canvas nx="ghost" style="position:fixed;bottom:0px;right:0px"></canvas> -->

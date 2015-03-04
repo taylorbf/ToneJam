@@ -68,7 +68,7 @@ header {
 
 }
 
-#dropzone1 {
+#dropzone0 {
 	margin-left: 120px;
 }
 
@@ -127,5 +127,16 @@ header {
 	margin:2px; 
 	position:absolute; 
 	top:0px; left:0px; 
+}
+
+.closer {
+	position:absolute;
+	top:5px;
+	right:5px;
+	color:#777;
+	font-family:courier;
+	font-size:8pt;
+	background-color:#eee;
+	padding:1px 4px;
 }
 	

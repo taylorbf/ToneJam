@@ -2,20 +2,66 @@ var colindex = 0;
 var rackindex = 0;
 var items = new Array();
 var media = new Array();
-var units = new Array();
+var shelves = new Array();
 
-for (var i=0;i<6;i++) {
-	units[i] = new Array();
+var shelf = function() {
+	var self = this;
+	this.index = shelves.length;
+	this.hasUGen = false;
+	this.make = function() {
+		var htmlstr = '<div class="dropzone" id="dropzone'+this.index+'">'
+					+ '<div class="emptyrack emptyugen">Signals</div>'
+					+ '<div id="racks"></div>'
+					+ '<div class="emptyrack emptyfx">FX</div>'
+					+ '</div>';
+		$("#shelves").append(htmlstr)
+		this.droppable();
+	}
+	this.units = new Array();
+	this.droppable = function() {
+		$("#dropzone"+self.index).droppable({
+			over: function(event,ui) {
+				if (ui.draggable[0].className.indexOf("ugen")>=0) {
+					$(this).find(".emptyugen").css("border-style", "solid")
+				} else {
+					$(this).find(".emptyfx").css("border-style", "solid")
+				}
+			},
+			out: function(event,ui) {
+				$(this).find(".emptyrack").css("border-style", "dashed")
+			},
+			drop: function( event, ui ) {
+				var ugen = (ui.draggable[0].className.indexOf("ugen")>=0) ? true : false
+				if (ugen && self.hasUGen) {
+					return;
+				}
+				addRack(ui.draggable[0].innerHTML,$(this).find("#racks")[0],$(this).attr("id"),ugen)
+				if (ugen) {
+	       			$(this).find(".emptyugen").hide()
+	       			self.hasUGen = true;
+	       		}
+	       		if (self.index==shelves.length-1) {
+					addShelf()
+				}
+	       		$(this).find(".emptyrack").css("border-style", "dashed")
+	        }
+		})
+	}
 }
 
-function addRack(type,parent,rackNum) {
-	rackNum = rackNum.replace("dropzone","")
+function addShelf() {
+	shelves.push(new shelf())
+	shelves[shelves.length-1].make();
+}
+
+function addRack(type,parent,shelfNum,ugen) {
+	shelfNum = shelfNum.replace("dropzone","")
 	var unit = new Tone[type]()
-	rack(unit,type,type,parent,rackNum)
+	rack(unit,type,type,parent,shelfNum,ugen)
 	unit.toMaster();
 }
 
-var rack = function (unit,unittype,unittitle,parent,rackNum) {
+var rack = function (unit,unittype,unittitle,parent,shelfNum,ugen) {
 
 	var rackid = "rack"+rackindex
 	rackindex++
@@ -23,8 +69,15 @@ var rack = function (unit,unittype,unittitle,parent,rackNum) {
 
 	var container = document.createElement("div")
 	container.setAttribute("class", "rackunit")
+	if (ugen) {
+		container.setAttribute("class", container.className + " ugenrack")
+	}
 	container.id = rackid
-	parent.appendChild(container)
+	if (ugen) {
+		$([parent]).prepend(container)
+	} else {
+		parent.appendChild(container)
+	}
 
 	var title = document.createElement("div")
 	title.setAttribute("class", "racktitle")
@@ -47,7 +100,6 @@ var rack = function (unit,unittype,unittitle,parent,rackNum) {
 		});
 		widget.unit = unit
 
-		console.log(parts[i].type)
 		if (parts[i].type=="select") {
 			widget.choices = media
 			widget.init();
@@ -57,7 +109,6 @@ var rack = function (unit,unittype,unittitle,parent,rackNum) {
 		action = action.bind(widget)
 		widget.on('*', action)
 		if (parts[i].initial) {
-			console.log(widget.canvasID)
 			widget.set(parts[i].initial)
 		}
 
@@ -68,11 +119,28 @@ var rack = function (unit,unittype,unittitle,parent,rackNum) {
 
 	}
 
-	items.push(widget);
-	console.log(rackNum)
-	var chain = units[rackNum]
+	var chain = shelves[shelfNum].units
 
-	chain.push(widget.unit);
+	var closer = document.createElement("div")
+	closer.setAttribute("class", "closer")
+	closer.innerHTML = "x"
+	container.appendChild(closer)
+	closer.onclick = function() {
+		if (container.className.indexOf("ugen")>=0) {
+			shelves[shelfNum].hasUGen = false;
+			$("#dropzone"+shelfNum).find(".emptyugen").show(0)
+		}
+		chain.splice(chain.indexOf(widget.unit),1);
+		parent.removeChild(container)
+	}
+
+
+	if (ugen) {
+		chain.unshift(widget.unit);
+	} else {
+		chain.push(widget.unit);
+	}
+	
 
 	for (var i=0;i<chain.length;i++) {
 		chain[i].disconnect()
@@ -420,7 +488,7 @@ var Parts = {
 	],
 	"Freeverb": [
 		{
-			label: "damping / room size",
+			label: "damping / size",
 			type: "position",
 			action: function(data) {
 				this.unit.dampening.value = data.x;
