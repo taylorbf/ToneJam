@@ -405,7 +405,7 @@ var Parts = {
 				if (data.list) {
 					for (var i=0;i<data.list.length;i++) {
 						if (data.list[i]) {
-							var note = nx.mtof(major[i]+48)
+							var note = nx.mtof(major[i]+60)
 							this.unit.triggerAttackRelease(note,'64n')
 						}
 					}
@@ -591,7 +591,7 @@ var Parts = {
 				this.unit.volume.value = nx.toDB(data.value);
 			},
 			initial: {
-				value: 0.6
+				value: 0.75
 			}
 		},
 		{
@@ -614,28 +614,38 @@ var Parts = {
 			label: "volume",
 			type: "dial",
 			action: function(data) {
-				this.unit.volume.value = nx.toDB(data.value)+5;
+				this.unit.volume.value = nx.toDB(data.value)+20;
+			},
+			initial: {
+				value: 0.8
 			}
 		},
 		{
-			label: "resonance",
+			label: "damp ?",
 			type: "dial",
 			action: function(data) {
-				this.unit.resonance.value = data.value;
+				this.unit.dampening.value = data.value*400;
+			}
+		},
+		{
+			label: "resonance ?",
+			type: "dial",
+			action: function(data) {
+				this.unit.resonance.value = data.value*100;
 			}
 		},{
-			label: "pitch",
+			label: "pitch ?",
 			type: "keyboard",
 			action: function(data) {
 				if (data.on) {
-					this.unit.triggerAttack(nx.mtof(major[i]+48))
+					this.unit.triggerAttack(nx.mtof(data.note))
 				} else {
 				//	this.unit.triggerRelease()
 				}
 			},
 			size: {
-				w: 230,
-				h: 50
+				w: 170,
+				h: 40
 			}
 		}
 	]},
@@ -645,6 +655,18 @@ var Parts = {
 		type: "AutoPanner",
 		ugen: false,
 		widgets: [
+		{
+			label: "on/off",
+			type: "toggle",
+			action: function(data) {
+				if (data.value) {
+					this.unit.start();
+				}
+			},
+			initial: {
+				value: 1
+			}
+		},
 		{
 			label: "amount",
 			type: "dial",
@@ -659,10 +681,10 @@ var Parts = {
 			label: "freq",
 			type: "dial",
 			action: function(data) {
-				this.unit.frequency = data.value*20;
+				this.unit.frequency.value = data.value*20;
 			},
 			initial: {
-				value: 0
+				value: 0.05
 			}
 		}
 	]},
@@ -677,7 +699,7 @@ var Parts = {
 				this.unit.bits = ~~(data.value*24);
 			},
 			initial: {
-				value: 1
+				value: 0.2
 			}
 		},
 		{
@@ -687,11 +709,11 @@ var Parts = {
 				this.unit.wet.value = data.value;
 			},
 			initial: {
-				value: 0
+				value: 0.1
 			}
 		}
 	]},
-	"Chebyshev": {
+/*	"Chebyshev": {
 		type: "Chebyshev",
 		ugen: false,
 		widgets: [
@@ -705,7 +727,7 @@ var Parts = {
 				value: 1
 			}
 		}
-	]},
+	]}, */
 	"EQ": {
 		type: "EQ",
 		ugen: false,
@@ -718,11 +740,12 @@ var Parts = {
 				this.unit.lowFrequency.value = data.x*1000
 			},
 			initial: {
-				value: 1
+				x: 1,
+				y: 0.95
 			},
 			size: {
-				w: 100,
-				h: 60
+				w: 180,
+				h: 100
 			}
 		},
 		{
@@ -732,11 +755,12 @@ var Parts = {
 				this.unit.mid.value = nx.invert(data.y)*-50+5
 			},
 			initial: {
-				value: 1
+				x: 0,
+				y: 0.95
 			},
 			size: {
 				w: 21,
-				h: 60
+				h: 100
 			}
 		},
 		{
@@ -747,11 +771,12 @@ var Parts = {
 				this.unit.highFrequency.value = data.x*2000+800
 			},
 			initial: {
-				value: 1
+				x: 0,
+				y: 0.95
 			},
 			size: {
-				w: 100,
-				h: 60
+				w: 180,
+				h: 100
 			}
 		}
 	]},
@@ -769,6 +794,10 @@ var Parts = {
 			size: {
 				w: 100,
 				h: 60
+			},
+			initial: {
+				x: 0.5,
+				y: 0.2
 			}
 		}
 	]},
@@ -792,7 +821,7 @@ var Parts = {
 			label: "cut",
 			type: "slider",
 			action: function(data) {
-				this.unit.threshold.value = nx.toDB(data.value) + 10;
+				this.unit.threshold = nx.toDB(data.value) + 10;
 			},
 			size: {
 				w: 20,
@@ -805,23 +834,27 @@ var Parts = {
 		ugen: false,
 		widgets: [
 		{
-			label: "threshold",
+			label: "reson",
 			type: "dial",
 			action: function(data) {
 				this.unit.resonance.value = data.value
 			}
 		},
 		{
-			label: "threshold",
+			label: "pitch ?",
 			type: "keyboard",
 			action: function(data) {
 				if (data.on) {
-					this.unit.delayTime = 1/nx.mtof(data.note)
+					console.log(1/(nx.mtof(data.note)+24))
+					this.unit.delayTime = 1/(nx.mtof(data.note)+24)
 				}
 			},
 			size: {
 				w: 250,
 				h: 50
+			},
+			init: function() {
+				this.unit.minDelay = 0.0001
 			}
 		}
 	]},
@@ -863,24 +896,33 @@ var Parts = {
 		ugen: false,
 		widgets: [
 		{
-			label: "base",
+			label: "base ?",
 			type: "dial",
 			action: function(data) {
-				this.unit.baseFrequency = data.value
+				this.unit.baseFrequency = data.value * 1000
+			},
+			initial: {
+				value: 0.4
 			}
 		},
 		{
-			label: "depth",
+			label: "depth ?",
 			type: "dial",
 			action: function(data) {
-				this.unit.depth = data.value
+				this.unit.depth = data.value * 20
+			},
+			initial: {
+				value: 0.5
 			}
 		},
 		{
-			label: "freq",
+			label: "freq ? ",
 			type: "dial",
 			action: function(data) {
 				this.unit.frequency.value = data.value
+			},
+			initial: {
+				value: 0.5
 			}
 		},
 		{
@@ -888,6 +930,9 @@ var Parts = {
 			type: "dial",
 			action: function(data) {
 				this.unit.wet.value = data.value
+			},
+			initial: {
+				value: 0.1
 			}
 		}
 	]}
