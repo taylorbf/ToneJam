@@ -6,7 +6,7 @@
 		<script src="js/jquery.js"></script>
 		<script src="js/jquery-ui.min.js"></script>
 		<script src="js/nexusUI.js"></script>
-		<script src="js/Tone4.js"></script>
+		<script src="js/Tone.js"></script>
 		<script src="js/rack.js"></script>
 		<link href='http://fonts.googleapis.com/css?family=Lato:300,400' rel='stylesheet' type='text/css'>
 		<link href="css/style.css" rel="stylesheet" type="text/css"></link>
@@ -19,12 +19,13 @@
 
 			nx.onload = function() {
 				nx.colorize("#0c7");
-			//	ghost1.watch();
+				ghost1.watch();
 				nx.toDB = function(signal) {
 					var DB = nx.scale(signal,0,1,-96,5)
 					console.log(DB)
 					return DB;
 				}
+				meter1.setup(Tone.context,Tone.Master)
 			}
 
 			$(function() {
@@ -57,7 +58,13 @@
 
 		</script>
 
-		<header>ToneJam : An improvisational web audio controller for <a href="http://tonejs.org">Tone.js</a> and <a href="http://www.nexusosc.com">NexusUI</a>
+		<header>
+			<a href="http://www.github.com/taylorbf/ToneJam">ToneJam</a> : An improvisational web audio controller for <a href="http://tonejs.org">Tone.js</a> and <a href="http://www.nexusosc.com">NexusUI</a>
+
+			<div style="position:absolute;right:22px;top:2px;height:100%">
+
+				<canvas nx="meter" style="height:29px;width:20px;border-radius:0px;margin:0px"></canvas>
+			</div>
 
 		</header>
 
@@ -81,8 +88,8 @@
 
 
 		</div>
-<!--
-		<canvas nx="ghost" style="position:fixed;bottom:0px;right:0px"></canvas> -->
+
+		<canvas nx="ghost" style="position:fixed;bottom:0px;right:0px"></canvas>
 
 	</body>
 </html>

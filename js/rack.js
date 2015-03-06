@@ -109,16 +109,12 @@ var rack = function (unit,unitname,unittitle,parent,shelfNum,ugen) {
 			widget.init();
 		} */
 
-		if (parts[i].type=="select") {
-			widget.choices = media
-			widget.init();
-		} 
 
 		var action = parts[i].action
 		action = action.bind(widget)
 		widget.on('*', action)
 		if (parts[i].initial) {
-			widget.set(parts[i].initial)
+			widget.set(parts[i].initial, true)
 		}
 
 		var label = document.createElement("div")
@@ -176,7 +172,7 @@ var rack = function (unit,unitname,unittitle,parent,shelfNum,ugen) {
 
 }
 
-
+var major = [0,2,4,5,7,9,11,12]
 
 var Parts = {
 	"Player.Loop": {
@@ -188,9 +184,10 @@ var Parts = {
 				type: "toggle",
 				action: function(data) {
 					if (data.value) {
+						this.unit.loop = true;
 						this.unit.start();
 					} else {
-						console.log(this.unit)
+						this.unit.loop = false
 						this.unit.stop();
 					}
 				}
@@ -204,10 +201,13 @@ var Parts = {
 					"value": 0.95
 				}
 			},{
-				label: "loop",
-				type: "toggle",
+				label: "speed",
+				type: "dial",
 				action: function(data) {
-					this.unit.loop = data.value ? true : false;
+					this.unit.playbackRate = data.value*2;
+				},
+				initial: {
+					value: 0.5
 				}
 			},{
 				label: "loop points",
@@ -224,6 +224,11 @@ var Parts = {
 				size: {
 					w: 90,
 					h: 30
+				},
+				init: function() {
+					this.choices = media
+					this.init();
+					this.unit.load("audio/"+this.choices[0], function() { })
 				}
 			},{
 				label: "pitch",
@@ -286,6 +291,11 @@ var Parts = {
 				size: {
 					w: 90,
 					h: 30
+				},
+				init: function() {
+					this.choices = media
+					this.init();
+					this.unit.load("audio/"+this.choices[0], function() { })
 				}
 			},{
 				label: "pitch",
@@ -295,7 +305,7 @@ var Parts = {
 						for (var i=0;i<data.list.length;i++) {
 							if (data.list[i]) {
 								this.unit.start();
-								this.unit.playbackRate = Math.pow(2,(i*7-24)/12);
+								this.unit.playbackRate = Math.pow(2,(major[i]-12)/12);
 							}
 						}
 					}
@@ -335,10 +345,10 @@ var Parts = {
 				"value": 0.75
 			}
 		},{
-			label: "mod (!)",
+			label: "mod",
 			type: "dial",
 			action: function(data) {
-				this.unit.harmonicity = data.value*100;
+				this.unit.harmonicity = data.value;
 			}
 		},{
 			label: "glide",
@@ -377,10 +387,10 @@ var Parts = {
 				"value": 0.75
 			}
 		},{
-			label: "mod",
+			label: "mod ?",
 			type: "dial",
 			action: function(data) {
-				this.unit.harmonicity = data.value*3;
+				this.unit.harmonicity = data.value;
 			}
 		},{
 			label: "glide",
@@ -395,7 +405,7 @@ var Parts = {
 				if (data.list) {
 					for (var i=0;i<data.list.length;i++) {
 						if (data.list[i]) {
-							var note = Math.pow(2,(i*5-24)/12)*440
+							var note = nx.mtof(major[i]+48)
 							this.unit.triggerAttackRelease(note,'64n')
 						}
 					}
@@ -432,13 +442,13 @@ var Parts = {
 				this.unit.volume.rampTo(nx.toDB(data.value),1);
 			},
 			initial: {
-				"value": 0.75
+				"value": 0.45
 			}
 		},{
 			label: "harm",
 			type: "dial",
 			action: function(data) {
-				this.unit.harmonicity = data.value*100;
+				this.unit.harmonicity = data.value*5;
 			}
 		},{
 			label: "mod index",
@@ -457,7 +467,7 @@ var Parts = {
 			type: "keyboard",
 			action: function(data) {
 					if (data.on) {
-						this.unit.setNote(Math.pow(2,(data.note-60)/12)*440)
+						this.unit.setNote(nx.mtof(data.note))
 						this.unit.triggerEnvelopeAttack(0, data.on)
 					} else {
 						this.unit.triggerEnvelopeRelease()
@@ -486,7 +496,7 @@ var Parts = {
 			label: "harm",
 			type: "dial",
 			action: function(data) {
-				this.unit.harmonicity = data.value*100;
+				this.unit.harmonicity = data.value*5;
 			}
 		},{
 			label: "mod index",
@@ -507,7 +517,7 @@ var Parts = {
 				if (data.list) {
 					for (var i=0;i<data.list.length;i++) {
 						if (data.list[i]) {
-							var note = Math.pow(2,(i*5-24)/12)*440
+							var note = nx.mtof(major[i]+48)
 							this.unit.triggerAttackRelease(note,'64n')
 						}
 					}
@@ -548,7 +558,7 @@ var Parts = {
 			}
 		},
 		{
-			label: "record (<span style='color:red'>WARNING: FEEDBACK</span>)",
+			label: "on/off (<span style='color:red'>WARNING: FEEDBACK</span>)",
 			type: "toggle",
 			action: function(data) {
 				if (data.value) {
@@ -579,6 +589,9 @@ var Parts = {
 			type: "dial",
 			action: function(data) {
 				this.unit.volume.value = nx.toDB(data.value);
+			},
+			initial: {
+				value: 0.6
 			}
 		},
 		{
@@ -615,7 +628,7 @@ var Parts = {
 			type: "keyboard",
 			action: function(data) {
 				if (data.on) {
-					this.unit.triggerAttack(Math.pow(2,(data.note-60)/12)*220)
+					this.unit.triggerAttack(nx.mtof(major[i]+48))
 				} else {
 				//	this.unit.triggerRelease()
 				}

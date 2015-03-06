@@ -18,7 +18,7 @@ a {
 
 a:hover {
 	color:#ccc;
-/*	border-bottom:dotted 1px white; */
+	text-decoration:underline;
 }
 
 /* title */
